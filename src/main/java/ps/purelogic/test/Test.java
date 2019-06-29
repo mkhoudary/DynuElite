@@ -30,7 +30,6 @@ public class Test {
                 .in("last_name", "Mohammed", "Ali", "Fawzi")
                 .inSelect("id", "cities", entity -> {
                     entity.select("id")
-                            .custom(Test::addToEntityQuery)
                             .eq("city_name", "Gaza");
                 })
                 .query();
