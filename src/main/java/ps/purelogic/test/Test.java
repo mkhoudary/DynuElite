@@ -6,7 +6,6 @@
 package ps.purelogic.test;
 
 import ps.purelogic.dynuelite.Elite;
-import ps.purelogic.dynuelite.conditions.LikeCondition;
 
 /**
  *
@@ -18,7 +17,7 @@ public class Test {
         
         elite.entity("countries", "c")
                 .select("first_name", "last_name", "age", "country")
-                .like("prop_id", 215, LikeCondition.Matcher.ENDING)
+                .like("prop_id", "%215%")
                 .or(group -> {
                     group.eq("name", "Palestine");
                     group.eq("id", 25);

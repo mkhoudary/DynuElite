@@ -99,13 +99,13 @@ public abstract class EliteConditionBuilder implements Condition {
     }
 
     public EliteConditionBuilder like(EliteOperand operand, Object value) {
-        conditions.add(new LikeCondition(operand, value, LikeCondition.Matcher.ANYWHERE));
+        conditions.add(new LikeCondition(operand, value, LikeCondition.Matcher.EXACT));
 
         return this;
     }
     
     public EliteConditionBuilder like(String operand, Object value) {
-        conditions.add(new LikeCondition(EliteOperand.property(alias(), operand), value, LikeCondition.Matcher.ANYWHERE));
+        conditions.add(new LikeCondition(EliteOperand.property(alias(), operand), value, LikeCondition.Matcher.EXACT));
 
         return this;
     }
