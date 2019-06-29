@@ -32,6 +32,15 @@ public abstract class EliteConditionBuilder implements Condition {
 
         return this;
     }
+
+    public EliteConditionBuilder or(Consumer<EliteConditionBuilder> conditionsGroup) {
+        EliteConditionsGroup group = new EliteConditionsGroup("OR");
+        conditions.add(group);
+        
+        conditionsGroup.accept(group);
+
+        return this;
+    }
     
     public EliteConditionBuilder eq(EliteOperand operand, EliteOperand value) {
         conditions.add(new EqualityCondition(operand, value));

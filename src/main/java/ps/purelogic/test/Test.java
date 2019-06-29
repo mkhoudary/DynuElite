@@ -18,9 +18,8 @@ public class Test {
         Elite elite = new Elite();
         elite.entity("countries")
                 .like(EliteOperand.property("prop_id"), 215, LikeCondition.Matcher.ENDING)
-                .and(group -> {
+                .or(group -> {
                     group.eq("name", "Palestine");
-                    
                     group.eq("id", 25);
                 })
                 .query();
