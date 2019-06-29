@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import ps.purelogic.dynuelite.conditions.Condition;
 import ps.purelogic.dynuelite.conditions.EqualityCondition;
+import ps.purelogic.dynuelite.conditions.LikeCondition;
 
 /**
  *
@@ -37,7 +38,49 @@ public abstract class EliteConditionBuilder implements Condition {
 
         return this;
     }
+    
+    public EliteConditionBuilder eq(EliteOperand operand, Object value) {
+        conditions.add(new EqualityCondition(operand, EliteOperand.value(value)));
 
+        return this;
+    }
+    
+    public EliteConditionBuilder eq(String operand, EliteOperand value) {
+        conditions.add(new EqualityCondition(EliteOperand.property(operand), value));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder eq(String operand, Object value) {
+        conditions.add(new EqualityCondition(EliteOperand.property(operand), EliteOperand.value(value)));
+
+        return this;
+    }
+
+    public EliteConditionBuilder like(EliteOperand operand, Object value) {
+        conditions.add(new LikeCondition(operand, value, LikeCondition.Matcher.ANYWHERE));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder like(String operand, Object value) {
+        conditions.add(new LikeCondition(EliteOperand.property(operand), value, LikeCondition.Matcher.ANYWHERE));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder like(EliteOperand operand, Object value, LikeCondition.Matcher matcher) {
+        conditions.add(new LikeCondition(operand, value, matcher));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder like(String operand, Object value, LikeCondition.Matcher matcher) {
+        conditions.add(new LikeCondition(EliteOperand.property(operand), value, matcher));
+
+        return this;
+    }
+    
     public void query() {
         StringBuilder wherePart = new StringBuilder();
         

@@ -11,14 +11,14 @@ package ps.purelogic.dynuelite;
  */
 public abstract class EliteOperand {
 
-    private final String name;
+    private final Object value;
 
-    public EliteOperand(String name) {
-        this.name = name;
+    public EliteOperand(Object value) {
+        this.value = value;
     }
 
-    public String getName() {
-        return name;
+    public Object getValue() {
+        return value;
     }
 
     public abstract void translate(StringBuilder builder);
@@ -28,19 +28,23 @@ public abstract class EliteOperand {
 
             @Override
             public void translate(StringBuilder builder) {
-                builder.append(getName());
+                builder.append(getValue());
             }
         };
     }
 
-    public static EliteOperand value(String value) {
+    public static EliteOperand value(Object value) {
         return new EliteOperand(value) {
 
             @Override
             public void translate(StringBuilder builder) {
-                builder.append("'");
-                builder.append(getName());
-                builder.append("'");
+                if (getValue() instanceof Number) {
+                    builder.append(getValue());
+                } else {
+                    builder.append("'");
+                    builder.append(getValue());
+                    builder.append("'");
+                }
             }
         };
     }

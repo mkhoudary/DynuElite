@@ -7,6 +7,7 @@ package ps.purelogic.test;
 
 import ps.purelogic.dynuelite.Elite;
 import ps.purelogic.dynuelite.EliteOperand;
+import ps.purelogic.dynuelite.conditions.LikeCondition;
 
 /**
  *
@@ -16,13 +17,11 @@ public class Test {
     public static void main(String[] args) {
         Elite elite = new Elite();
         elite.entity("countries")
-                .eq(EliteOperand.property("prop_id"), EliteOperand.value("215"))
+                .like(EliteOperand.property("prop_id"), 215, LikeCondition.Matcher.ENDING)
                 .and(group -> {
-                    group.eq(EliteOperand.property("name"), 
-                             EliteOperand.value("Palestine"));
+                    group.eq("name", "Palestine");
                     
-                    group.eq(EliteOperand.property("id"), 
-                             EliteOperand.value("25"));
+                    group.eq("id", 25);
                 })
                 .query();
     }
