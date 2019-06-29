@@ -5,15 +5,44 @@
  */
 package ps.purelogic.dynuelite;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import ps.purelogic.dynuelite.conditions.Condition;
+import ps.purelogic.dynuelite.conditions.EqualityCondition;
+
 /**
  *
  * @author Mohammed
  */
-public class EliteConditionBuilder {
-
+public abstract class EliteConditionBuilder implements Condition {
+    
+    protected final List<Condition> conditions;
 
     public EliteConditionBuilder() {
+        conditions = new ArrayList<>();
+    }
+
+    public EliteConditionBuilder and(Consumer<EliteConditionBuilder> conditionsGroup) {
+        EliteConditionsGroup group = new EliteConditionsGroup("AND");
+        conditions.add(group);
         
+        conditionsGroup.accept(group);
+
+        return this;
     }
     
+    public EliteConditionBuilder eq(EliteOperand operand, EliteOperand value) {
+        conditions.add(new EqualityCondition(operand, value));
+
+        return this;
+    }
+
+    public void query() {
+        StringBuilder wherePart = new StringBuilder();
+        
+        translate(wherePart);
+        
+        System.out.println(wherePart.toString());
+    }
 }

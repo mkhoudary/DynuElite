@@ -5,34 +5,33 @@
  */
 package ps.purelogic.dynuelite;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  *
  * @author Mohammed
  */
-public class EliteEntity extends EliteConditionBuilder {
+public class EliteConditionsGroup extends EliteConditionBuilder {
 
-    private final String model;
+    private final String operand;
 
-    public EliteEntity(String model) {
-        this.model = model;
-    }
-    
-    public List<EntityPresentation> all() {
-        return Collections.EMPTY_LIST;
+    public EliteConditionsGroup(String operand) {
+        this.operand = operand;
     }
 
     @Override
     public void translate(StringBuilder builder) {
-         for (int i = 0; i < conditions.size(); i++) {
+        builder.append("(");
+        
+        for (int i = 0; i < conditions.size(); i++) {
             if (i > 0) {
-                builder.append(" AND ");
+                builder.append(" ");
+                builder.append(operand);
+                builder.append(" ");
             }
             
             conditions.get(i).translate(builder);
         }
+        
+        builder.append(") ");
     }
 
 }
