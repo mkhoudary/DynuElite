@@ -11,24 +11,36 @@ package ps.purelogic.dynuelite;
  */
 public abstract class EliteOperand {
 
-    private final Object value;
+    private final Object[] values;
 
-    public EliteOperand(Object value) {
-        this.value = value;
+    public EliteOperand(Object ... values) {
+        this.values = values;
     }
 
-    public Object getValue() {
-        return value;
+    public Object[] getValues() {
+        return values;
     }
 
-    public abstract void translate(StringBuilder builder);
+    public void translate(StringBuilder builder) {
+        String translated = translate();
+        
+        builder.append(translated);
+    }
+    
+    public abstract String translate();
 
-    public static EliteOperand property(String name) {
-        return new EliteOperand(name) {
+    public static EliteOperand property(String alias, String name) {
+        return new EliteOperand(alias, name) {
 
             @Override
-            public void translate(StringBuilder builder) {
-                builder.append(getValue());
+            public String translate() {
+                StringBuilder builder = new StringBuilder();
+                
+                builder.append(getValues()[0]);
+                builder.append(".");
+                builder.append(getValues()[1]);
+                
+                return builder.toString();
             }
         };
     }
@@ -37,14 +49,18 @@ public abstract class EliteOperand {
         return new EliteOperand(value) {
 
             @Override
-            public void translate(StringBuilder builder) {
-                if (getValue() instanceof Number) {
-                    builder.append(getValue());
+            public String translate() {
+                StringBuilder builder = new StringBuilder();
+                
+                if (getValues()[0] instanceof Number) {
+                    builder.append(getValues()[0]);
                 } else {
                     builder.append("'");
-                    builder.append(getValue());
+                    builder.append(getValues()[0]);
                     builder.append("'");
                 }
+                
+                return builder.toString();
             }
         };
     }

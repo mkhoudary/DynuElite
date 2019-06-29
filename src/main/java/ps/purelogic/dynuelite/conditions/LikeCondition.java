@@ -31,8 +31,11 @@ public class LikeCondition implements Condition {
     }
 
     @Override
-    public void translate(StringBuilder builder) {
+    public String translate() {
+        StringBuilder builder = new StringBuilder();
+        
         operand.translate(builder);
+        
         builder.append(" like ");
         
         if (null != matcher) switch (matcher) {
@@ -59,6 +62,8 @@ public class LikeCondition implements Condition {
             default:
                 break;
         }
+        
+        return builder.toString();
     }
 
 }

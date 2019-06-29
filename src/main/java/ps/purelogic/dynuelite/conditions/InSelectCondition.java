@@ -5,20 +5,21 @@
  */
 package ps.purelogic.dynuelite.conditions;
 
+import ps.purelogic.dynuelite.EliteEntity;
 import ps.purelogic.dynuelite.EliteOperand;
 
 /**
  *
  * @author Mohammed
  */
-public class EqualityCondition implements Condition {
+public class InSelectCondition implements Condition {
 
     private final EliteOperand operand;
-    private final EliteOperand value;
+    private final EliteEntity innerEntity;
 
-    public EqualityCondition(EliteOperand operand, EliteOperand value) {
+    public InSelectCondition(EliteOperand operand, EliteEntity innerEntity) {
         this.operand = operand;
-        this.value = value;
+        this.innerEntity = innerEntity;
     }
 
     @Override
@@ -26,8 +27,11 @@ public class EqualityCondition implements Condition {
         StringBuilder builder = new StringBuilder();
         
         operand.translate(builder);
-        builder.append(" = ");
-        value.translate(builder);
+        builder.append(" in (");
+        
+        innerEntity.translate(builder);
+        
+        builder.append(") ");
         
         return builder.toString();
     }

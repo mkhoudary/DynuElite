@@ -12,26 +12,37 @@ package ps.purelogic.dynuelite;
 public class EliteConditionsGroup extends EliteConditionBuilder {
 
     private final String operand;
+    private final EliteConditionBuilder builder;
 
-    public EliteConditionsGroup(String operand) {
+    public EliteConditionsGroup(String operand, EliteConditionBuilder builder) {
         this.operand = operand;
+        this.builder = builder;
     }
 
     @Override
-    public void translate(StringBuilder builder) {
-        builder.append("(");
+    public String translate() {
+        StringBuilder stringBuilder = new StringBuilder();
         
+        stringBuilder.append("(");
+
         for (int i = 0; i < conditions.size(); i++) {
             if (i > 0) {
-                builder.append(" ");
-                builder.append(operand);
-                builder.append(" ");
+                stringBuilder.append(" ");
+                stringBuilder.append(operand);
+                stringBuilder.append(" ");
             }
-            
-            conditions.get(i).translate(builder);
+
+            conditions.get(i).translate(stringBuilder);
         }
+
+        stringBuilder.append(") ");
         
-        builder.append(") ");
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public String alias() {
+        return builder.alias();
     }
 
 }

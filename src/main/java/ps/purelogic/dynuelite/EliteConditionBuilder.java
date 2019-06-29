@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import ps.purelogic.dynuelite.conditions.Condition;
 import ps.purelogic.dynuelite.conditions.EqualityCondition;
+import ps.purelogic.dynuelite.conditions.InCondition;
+import ps.purelogic.dynuelite.conditions.InSelectCondition;
 import ps.purelogic.dynuelite.conditions.LikeCondition;
 
 /**
@@ -23,9 +25,39 @@ public abstract class EliteConditionBuilder implements Condition {
     public EliteConditionBuilder() {
         conditions = new ArrayList<>();
     }
+    
+    public EliteConditionBuilder inSelect(String operand, String model, Consumer<EliteEntity> entity) {
+        EliteEntity inEntity = new EliteEntity(model);
+        conditions.add(new InSelectCondition(EliteOperand.property(alias(), operand), inEntity));
+        
+        entity.accept(inEntity);
+
+        return this;
+    }
+    
+    public EliteConditionBuilder inSelect(EliteOperand operand, String model, Consumer<EliteEntity> entity) {
+        EliteEntity inEntity = new EliteEntity(model);
+        conditions.add(new InSelectCondition(operand, inEntity));
+        
+        entity.accept(inEntity);
+
+        return this;
+    }
+
+    public EliteConditionBuilder in(String operand, Object ... values) {
+        conditions.add(new InCondition(EliteOperand.property(alias(), operand), values));
+
+        return this;
+    }
+
+    public EliteConditionBuilder in(EliteOperand operand, Object ... values) {
+        conditions.add(new InCondition(operand, values));
+
+        return this;
+    }
 
     public EliteConditionBuilder and(Consumer<EliteConditionBuilder> conditionsGroup) {
-        EliteConditionsGroup group = new EliteConditionsGroup("AND");
+        EliteConditionsGroup group = new EliteConditionsGroup("AND", this);
         conditions.add(group);
         
         conditionsGroup.accept(group);
@@ -34,7 +66,7 @@ public abstract class EliteConditionBuilder implements Condition {
     }
 
     public EliteConditionBuilder or(Consumer<EliteConditionBuilder> conditionsGroup) {
-        EliteConditionsGroup group = new EliteConditionsGroup("OR");
+        EliteConditionsGroup group = new EliteConditionsGroup("OR", this);
         conditions.add(group);
         
         conditionsGroup.accept(group);
@@ -55,13 +87,13 @@ public abstract class EliteConditionBuilder implements Condition {
     }
     
     public EliteConditionBuilder eq(String operand, EliteOperand value) {
-        conditions.add(new EqualityCondition(EliteOperand.property(operand), value));
+        conditions.add(new EqualityCondition(EliteOperand.property(alias(), operand), value));
 
         return this;
     }
     
     public EliteConditionBuilder eq(String operand, Object value) {
-        conditions.add(new EqualityCondition(EliteOperand.property(operand), EliteOperand.value(value)));
+        conditions.add(new EqualityCondition(EliteOperand.property(alias(), operand), EliteOperand.value(value)));
 
         return this;
     }
@@ -73,7 +105,7 @@ public abstract class EliteConditionBuilder implements Condition {
     }
     
     public EliteConditionBuilder like(String operand, Object value) {
-        conditions.add(new LikeCondition(EliteOperand.property(operand), value, LikeCondition.Matcher.ANYWHERE));
+        conditions.add(new LikeCondition(EliteOperand.property(alias(), operand), value, LikeCondition.Matcher.ANYWHERE));
 
         return this;
     }
@@ -85,10 +117,12 @@ public abstract class EliteConditionBuilder implements Condition {
     }
     
     public EliteConditionBuilder like(String operand, Object value, LikeCondition.Matcher matcher) {
-        conditions.add(new LikeCondition(EliteOperand.property(operand), value, matcher));
+        conditions.add(new LikeCondition(EliteOperand.property(alias(), operand), value, matcher));
 
         return this;
     }
+    
+    public abstract String alias();
     
     public void query() {
         StringBuilder wherePart = new StringBuilder();

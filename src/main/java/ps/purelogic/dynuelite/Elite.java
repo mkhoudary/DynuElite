@@ -24,4 +24,8 @@ public class Elite {
         return new EliteEntity(model);
     }
 
+    public EliteEntity entity(String model, String alias) {
+        return new EliteEntity(model, alias);
+    }
+
 }

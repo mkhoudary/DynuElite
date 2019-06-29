@@ -11,6 +11,12 @@ package ps.purelogic.dynuelite.conditions;
  */
 public interface Condition {
 
-    public void translate(StringBuilder builder);
+    String translate();
+    
+    public default void translate(StringBuilder builder) {
+        String translated = translate();
+        
+        builder.append(translated);
+    }
 
 }
