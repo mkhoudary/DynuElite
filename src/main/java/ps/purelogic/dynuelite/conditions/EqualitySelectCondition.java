@@ -5,24 +5,23 @@
  */
 package ps.purelogic.dynuelite.conditions;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import ps.purelogic.dynuelite.EliteEntity;
 import ps.purelogic.dynuelite.EliteOperand;
 
 /**
  *
  * @author Mohammed
  */
-public class InCondition implements Condition {
+public class EqualitySelectCondition implements Condition {
 
     private final EliteOperand operand;
-    private final Object[] values;
-    private final boolean in;
+    private final EliteEntity innerEntity;
+    private final boolean equality;
 
-    public InCondition(EliteOperand operand, Object[] values, boolean in) {
+    public EqualitySelectCondition(EliteOperand operand, EliteEntity innerEntity, boolean equality) {
         this.operand = operand;
-        this.values = values;
-        this.in = in;
+        this.innerEntity = innerEntity;
+        this.equality = equality;
     }
 
     @Override
@@ -31,13 +30,13 @@ public class InCondition implements Condition {
         
         operand.translate(builder);
         
-        if (in) {
-            builder.append(" in (");
+        if (equality) {
+            builder.append(" = (");
         } else {
-            builder.append(" not in (");
+            builder.append(" <> (");
         }
         
-        builder.append(Arrays.asList(values).stream().map(value -> value instanceof Number ? value.toString() : "'" + value.toString() + "'").collect(Collectors.joining(", ")));
+        innerEntity.translate(builder);
         
         builder.append(") ");
         

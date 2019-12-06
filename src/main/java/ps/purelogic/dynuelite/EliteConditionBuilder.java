@@ -8,11 +8,14 @@ package ps.purelogic.dynuelite;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 import ps.purelogic.dynuelite.conditions.Condition;
 import ps.purelogic.dynuelite.conditions.EqualityCondition;
+import ps.purelogic.dynuelite.conditions.EqualitySelectCondition;
 import ps.purelogic.dynuelite.conditions.InCondition;
 import ps.purelogic.dynuelite.conditions.InSelectCondition;
 import ps.purelogic.dynuelite.conditions.LikeCondition;
+import ps.purelogic.dynuelite.conditions.NullityCondition;
 
 /**
  *
@@ -25,6 +28,10 @@ public abstract class EliteConditionBuilder implements Condition {
     public EliteConditionBuilder() {
         conditions = new ArrayList<>();
     }
+    
+    /*
+    * In Select
+    */
     
     public EliteConditionBuilder inSelect(String operand, String model, Consumer<EliteEntity> entity) {
         EliteEntity inEntity = new EliteEntity(model);
@@ -43,18 +50,42 @@ public abstract class EliteConditionBuilder implements Condition {
 
         return this;
     }
+    
+    /*
+    * In
+    */
 
     public EliteConditionBuilder in(String operand, Object ... values) {
-        conditions.add(new InCondition(EliteOperand.property(alias(), operand), values));
+        conditions.add(new InCondition(EliteOperand.property(alias(), operand), values, true));
 
         return this;
     }
 
     public EliteConditionBuilder in(EliteOperand operand, Object ... values) {
-        conditions.add(new InCondition(operand, values));
+        conditions.add(new InCondition(operand, values, true));
 
         return this;
     }
+    
+    /*
+    * Not In
+    */
+
+    public EliteConditionBuilder notIn(String operand, Object ... values) {
+        conditions.add(new InCondition(EliteOperand.property(alias(), operand), values, false));
+
+        return this;
+    }
+
+    public EliteConditionBuilder notIn(EliteOperand operand, Object ... values) {
+        conditions.add(new InCondition(operand, values, false));
+
+        return this;
+    }
+    
+    /*
+    * Grouping
+    */
 
     public EliteConditionBuilder and(Consumer<EliteConditionBuilder> conditionsGroup) {
         EliteConditionsGroup group = new EliteConditionsGroup("AND", this);
@@ -74,29 +105,120 @@ public abstract class EliteConditionBuilder implements Condition {
         return this;
     }
     
+    /*
+    * Equal Select
+    */
+    
+    public EliteConditionBuilder eqSelect(EliteOperand operand, String model, Consumer<EliteEntity> entity) {
+        EliteEntity inEntity = new EliteEntity(model);
+        conditions.add(new EqualitySelectCondition(operand, inEntity, true));
+
+        entity.accept(inEntity);
+        
+        return this;
+    }
+    
+    public EliteConditionBuilder eqSelect(String operand, String model, Consumer<EliteEntity> entity) {
+        EliteEntity inEntity = new EliteEntity(model);
+        conditions.add(new EqualitySelectCondition(EliteOperand.property(alias(), operand), inEntity, true));
+
+        entity.accept(inEntity);
+        
+        return this;
+    }
+    
+    /*
+    * Equal
+    */
+    
     public EliteConditionBuilder eq(EliteOperand operand, EliteOperand value) {
-        conditions.add(new EqualityCondition(operand, value));
+        conditions.add(new EqualityCondition(operand, value, true));
 
         return this;
     }
     
     public EliteConditionBuilder eq(EliteOperand operand, Object value) {
-        conditions.add(new EqualityCondition(operand, EliteOperand.value(value)));
+        conditions.add(new EqualityCondition(operand, EliteOperand.value(value), true));
 
         return this;
     }
     
     public EliteConditionBuilder eq(String operand, EliteOperand value) {
-        conditions.add(new EqualityCondition(EliteOperand.property(alias(), operand), value));
+        conditions.add(new EqualityCondition(EliteOperand.property(alias(), operand), value, true));
 
         return this;
     }
     
     public EliteConditionBuilder eq(String operand, Object value) {
-        conditions.add(new EqualityCondition(EliteOperand.property(alias(), operand), EliteOperand.value(value)));
+        conditions.add(new EqualityCondition(EliteOperand.property(alias(), operand), EliteOperand.value(value), true));
 
         return this;
     }
+    
+    /*
+    * Not Equal
+    */
+    
+    public EliteConditionBuilder ne(EliteOperand operand, EliteOperand value) {
+        conditions.add(new EqualityCondition(operand, value, false));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder ne(EliteOperand operand, Object value) {
+        conditions.add(new EqualityCondition(operand, EliteOperand.value(value), false));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder ne(String operand, EliteOperand value) {
+        conditions.add(new EqualityCondition(EliteOperand.property(alias(), operand), value, false));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder ne(String operand, Object value) {
+        conditions.add(new EqualityCondition(EliteOperand.property(alias(), operand), EliteOperand.value(value), false));
+
+        return this;
+    }
+    
+    /*
+    * IS NULL
+    */
+    
+    public EliteConditionBuilder isNull(EliteOperand operand) {
+        conditions.add(new NullityCondition(operand, true));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder isNull(String operand) {
+        return isNull(EliteOperand.property(alias(), operand));
+    }
+    
+    
+    /*
+    * IS Not NULL
+    */
+    
+    public EliteConditionBuilder isNotNull(EliteOperand operand) {
+        conditions.add(new NullityCondition(operand, false));
+
+        return this;
+    }
+    
+    public EliteConditionBuilder isNotNull(String operand) {
+        return isNotNull(EliteOperand.property(alias(), operand));
+    }
+    
+    /*
+    * IS NULL
+    */
+    
+    /*
+    * Like
+    */
 
     public EliteConditionBuilder like(EliteOperand operand, Object value) {
         conditions.add(new LikeCondition(operand, value, LikeCondition.Matcher.EXACT));
@@ -129,6 +251,10 @@ public abstract class EliteConditionBuilder implements Condition {
         
         translate(wherePart);
         
-        System.out.println(wherePart.toString());
+        String finalQuery = wherePart.toString();
+        
+        finalQuery = finalQuery.replaceAll("\\s{2,}", " ");
+        
+        System.out.println(finalQuery);
     }
 }

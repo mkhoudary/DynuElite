@@ -6,9 +6,7 @@
 package ps.purelogic.test;
 
 import ps.purelogic.dynuelite.Elite;
-import ps.purelogic.dynuelite.EliteEntity;
 import ps.purelogic.dynuelite.EliteOperand;
-import ps.purelogic.dynuelite.ScopedEntityQuery;
 
 /**
  *
@@ -19,26 +17,20 @@ public class Test {
     public static void main(String[] args) {
         Elite elite = new Elite();
 
-        elite.entity("countries", "c")
-                .select("first_name", "last_name", "age", "country")
-                .custom(Test::addToEntityQuery)
-                .like("prop_id", "%215%")
-                .or(group -> {
-                    group.eq("name", "Palestine");
-                    group.eq("id", 25);
+        elite.entity("saf_invoices", "c")
+                .join("saf_line_items", "i", join -> {
+                    join.eq("invoice_id", EliteOperand.property(join.getJoinedWith().alias(), "id"));
+                    
+                    join.join("saf_invoice_line_items", "l", otherJoin -> {
+                        otherJoin.select("amount");
+                        otherJoin.eq("id", EliteOperand.property(otherJoin.getJoinedWith().alias(), "line_item_id"));
+                    });
                 })
-                .in("last_name", "Mohammed", "Ali", "Fawzi")
-                .inSelect("id", "cities", entity -> {
-                    entity.select("id")
-                            .eq("city_name", "Gaza");
+                .select("id", "invoice_number")
+                .and(builder -> {
+                    builder.isNotNull("invoice_number");
+                    builder.ne("invoice_number", "");
                 })
                 .query();
-    }
-
-    public static void addToEntityQuery(EliteEntity entity) {
-        entity.leftJoin("resellers", "r", join -> {
-            join.select("reseller_name", "reseller_address");
-            join.eq("id", EliteOperand.property(join.getJoinedWith().alias(), "reseller_id"));
-        });
     }
 }

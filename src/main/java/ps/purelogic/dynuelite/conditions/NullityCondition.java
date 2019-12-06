@@ -11,16 +11,14 @@ import ps.purelogic.dynuelite.EliteOperand;
  *
  * @author Mohammed
  */
-public class EqualityCondition implements Condition {
+public class NullityCondition implements Condition {
 
     private final EliteOperand operand;
-    private final EliteOperand value;
-    private final boolean equals;
+    private final boolean isNull;
 
-    public EqualityCondition(EliteOperand operand, EliteOperand value, boolean equals) {
+    public NullityCondition(EliteOperand operand, boolean isNull) {
         this.operand = operand;
-        this.value = value;
-        this.equals = equals;
+        this.isNull = isNull;
     }
 
     @Override
@@ -29,13 +27,11 @@ public class EqualityCondition implements Condition {
         
         operand.translate(builder);
         
-        if (equals) {
-            builder.append(" = ");
+        if (isNull) {
+            builder.append(" IS NULL ");
         } else {
-            builder.append(" <> ");
+            builder.append(" IS NOT NULL ");
         }
-        
-        value.translate(builder);
         
         return builder.toString();
     }
