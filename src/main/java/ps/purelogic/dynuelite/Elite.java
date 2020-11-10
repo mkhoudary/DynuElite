@@ -17,7 +17,7 @@ elite('City').eq('id', 12)
                         q.eq('name', elite.raw('trim(name)'));
 			q.like('name', '%Gaza%');
 		}).exec();
-*/
+*/  
 public class Elite {
 
     public EliteEntity entity(String model) {
